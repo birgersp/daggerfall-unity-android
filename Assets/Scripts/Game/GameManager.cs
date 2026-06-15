@@ -48,6 +48,7 @@ namespace DaggerfallWorkshop.Game
         bool classicUpdate = false;                         // True when reached a classic update
         float initialQualitySettingsShadowDistance;
         //Texture2D pauseScreenshot;
+        bool dpadWasHeld = false;
 
         Dictionary<Func<bool>, string> preventRestConditions = new Dictionary<Func<bool>, string>();
 
@@ -510,7 +511,10 @@ namespace DaggerfallWorkshop.Game
         {
             // Don't process game manager input messages when game not running
             if (!IsPlayingGame())
+            {
+                dpadWasHeld = false;
                 return;
+            }
 
             // Post message to open options dialog on escape during gameplay
             if (InputManager.Instance.ActionComplete(InputManager.Actions.Escape))
@@ -518,8 +522,14 @@ namespace DaggerfallWorkshop.Game
                 DaggerfallUI.PostMessage(DaggerfallUIMessages.dfuiOpenPauseOptionsDialog);
             }
 
-            // Open Context Menu on Tab key/action or controller Right Stick Click (R3)
-            if (InputManager.Instance.ActionComplete(InputManager.Actions.ContextMenu) || Input.GetKeyUp(KeyCode.JoystickButton9))
+            // Track D-pad presses to open Context Menu (using Axis6/7/8)
+            float dpadVal = InputManager.GetAxisRawSafe("Axis6") + InputManager.GetAxisRawSafe("Axis7") + InputManager.GetAxisRawSafe("Axis8");
+            bool dpadIsHeld = Mathf.Abs(dpadVal) > 0.5f;
+            bool dpadReleased = dpadWasHeld && !dpadIsHeld;
+            dpadWasHeld = dpadIsHeld;
+
+            // Open Context Menu on Tab key/action, controller Right Stick Click (R3), or D-pad release
+            if (InputManager.Instance.ActionComplete(InputManager.Actions.ContextMenu) || Input.GetKeyUp(KeyCode.JoystickButton9) || dpadReleased)
             {
                 DaggerfallUI.PostMessage(DaggerfallUIMessages.dfuiOpenContextMenu);
             }

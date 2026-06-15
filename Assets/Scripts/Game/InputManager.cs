@@ -677,8 +677,8 @@ namespace DaggerfallWorkshop.Game
             }
             if (EnableController && !String.IsNullOrEmpty(cameraAxisBindingCache[0]))
             {
-                var h = Input.GetAxis(cameraAxisBindingCache[0]);
-                var v = Input.GetAxis(cameraAxisBindingCache[1]);
+                var h = GetAxisSafe(cameraAxisBindingCache[0]);
+                var v = GetAxisSafe(cameraAxisBindingCache[1]);
                 if (Mathf.Sqrt(h * h + v * v) > JoystickDeadzone)
                 {
                     joyLookX = h;
@@ -1389,8 +1389,8 @@ namespace DaggerfallWorkshop.Game
         /// </summary>
         public float GetUIScrollMovement()
         {
-            float horizontal = Input.GetAxis(cameraAxisBindingCache[0]);
-            float vertical = Input.GetAxis(cameraAxisBindingCache[1]);
+            float horizontal = GetAxisSafe(cameraAxisBindingCache[0]);
+            float vertical = GetAxisSafe(cameraAxisBindingCache[1]);
 
             if (GetAxisActionInversion(AxisActions.CameraHorizontal))
                 horizontal *= -1;
@@ -1673,10 +1673,10 @@ namespace DaggerfallWorkshop.Game
             if (string.IsNullOrEmpty(horizBinding) || string.IsNullOrEmpty(vertBinding))
                 return;
 
-            var horizj = Input.GetAxisRaw(horizBinding);
-            var vertj = Input.GetAxisRaw(vertBinding);
-            var cameraHorizJ = Input.GetAxisRaw(cameraAxisBindingCache[0]);
-            var cameraVertJ = Input.GetAxisRaw(cameraAxisBindingCache[1]);
+            var horizj = GetAxisRawSafe(horizBinding);
+            var vertj = GetAxisRawSafe(vertBinding);
+            var cameraHorizJ = GetAxisRawSafe(cameraAxisBindingCache[0]);
+            var cameraVertJ = GetAxisRawSafe(cameraAxisBindingCache[1]);
 
             float distMovement = Mathf.Sqrt(horizj * horizj + vertj * vertj);
             float distCamera = Mathf.Sqrt(cameraHorizJ * cameraHorizJ + cameraVertJ * cameraVertJ);
@@ -1805,15 +1805,68 @@ namespace DaggerfallWorkshop.Game
             return key >= startingAxisKeyCode && key < startingAxisKeyCode + numAxes * 2;
         }
 
+        public static float GetAxisRawSafe(string axisName)
+        {
+            if (string.IsNullOrEmpty(axisName))
+                return 0f;
+            float val = 0f;
+            try
+            {
+                val = Input.GetAxisRaw(axisName);
+            }
+            catch (System.ArgumentException)
+            {
+            }
+
+            if (val == 0f)
+            {
+                try
+                {
+                    val = Input.GetAxisRaw(axisName.ToLower());
+                }
+                catch (System.ArgumentException)
+                {
+                }
+            }
+            return val;
+        }
+
+        public static float GetAxisSafe(string axisName)
+        {
+            if (string.IsNullOrEmpty(axisName))
+                return 0f;
+            float val = 0f;
+            try
+            {
+                val = Input.GetAxis(axisName);
+            }
+            catch (System.ArgumentException)
+            {
+            }
+
+            if (val == 0f)
+            {
+                try
+                {
+                    val = Input.GetAxis(axisName.ToLower());
+                }
+                catch (System.ArgumentException)
+                {
+                }
+            }
+            return val;
+        }
+
         bool GetAxisKey(int key)
         {
             if (!EnableController || key < startingAxisKeyCode)
                 return false;
 
+            string axisName = axisKeyCodeToInputAxis[key % startingAxisKeyCode];
             if (key % 2 == 0)
-                return Input.GetAxisRaw(axisKeyCodeToInputAxis[key % startingAxisKeyCode]) > 0;
+                return GetAxisRawSafe(axisName) > 0;
             else
-                return Input.GetAxisRaw(axisKeyCodeToInputAxis[key % startingAxisKeyCode]) < 0;
+                return GetAxisRawSafe(axisName) < 0;
         }
 
         bool GetUnaryKey(KeyCode k, System.Func<KeyCode, bool> method, bool keyDown, bool checkModHeldFirst = true)
@@ -2028,7 +2081,7 @@ namespace DaggerfallWorkshop.Game
             if (!EnableController || String.IsNullOrEmpty(movementAxisBindingCache[0]) || String.IsNullOrEmpty(movementAxisBindingCache[1]))
                 return;
 
-            Vector2 joyMovement = new Vector2(Input.GetAxis(movementAxisBindingCache[0]), Input.GetAxis(movementAxisBindingCache[1]));
+            Vector2 joyMovement = new Vector2(GetAxisSafe(movementAxisBindingCache[0]), GetAxisSafe(movementAxisBindingCache[1]));
             joyMovement.x *= GetAxisActionInversion(AxisActions.MovementHorizontal) ? -1f : 1f;
             joyMovement.y *= GetAxisActionInversion(AxisActions.MovementVertical) ? -1f : 1f;
             float horiz = joyMovement.x + TouchscreenInputManager.GetAxis(AxisActions.MovementHorizontal);

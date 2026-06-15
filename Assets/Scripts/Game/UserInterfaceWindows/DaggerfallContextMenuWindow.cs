@@ -42,6 +42,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         MenuType currentMenu = MenuType.Root;
 
         bool stickAxisNeutral = true;
+        bool dpadYAxisNeutral = true;
+        bool dpadXAxisNeutral = true;
 
         public DaggerfallContextMenuWindow(IUserInterfaceManager uiManager, IUserInterfaceWindow previous = null)
             : base(uiManager, previous)
@@ -174,7 +176,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
 
             // 2. Check Right/Left Stick vertical axis for controller scrolling (using Axis2)
-            float stickY = Input.GetAxisRaw("Axis2");
+            float stickY = InputManager.GetAxisRawSafe("Axis2");
             if (Mathf.Abs(stickY) < 0.2f)
             {
                 stickAxisNeutral = true;
@@ -190,6 +192,48 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 {
                     SelectNextWithWrap();
                     stickAxisNeutral = false;
+                }
+            }
+
+            // Check D-pad vertical axis for controller scrolling (using Axis6 or Axis8 for Linux/Logitech F710)
+            float dpadY = InputManager.GetAxisRawSafe("Axis6") + InputManager.GetAxisRawSafe("Axis8");
+            if (Mathf.Abs(dpadY) < 0.2f)
+            {
+                dpadYAxisNeutral = true;
+            }
+            else if (dpadYAxisNeutral)
+            {
+                // D-pad UP is negative (-1.0) and DOWN is positive (+1.0) on standard gamepads
+                if (dpadY < -0.5f)
+                {
+                    SelectPreviousWithWrap();
+                    dpadYAxisNeutral = false;
+                }
+                else if (dpadY > 0.5f)
+                {
+                    SelectNextWithWrap();
+                    dpadYAxisNeutral = false;
+                }
+            }
+
+            // Check D-pad horizontal axis for going back or confirming (using Axis5 or Axis7 for Linux/Logitech F710)
+            float dpadX = InputManager.GetAxisRawSafe("Axis5") + InputManager.GetAxisRawSafe("Axis7");
+            if (Mathf.Abs(dpadX) < 0.2f)
+            {
+                dpadXAxisNeutral = true;
+            }
+            else if (dpadXAxisNeutral)
+            {
+                // D-pad LEFT is negative (-1.0) and RIGHT is positive (+1.0)
+                if (dpadX < -0.5f)
+                {
+                    GoBack();
+                    dpadXAxisNeutral = false;
+                }
+                else if (dpadX > 0.5f)
+                {
+                    listBox.UseSelectedItem();
+                    dpadXAxisNeutral = false;
                 }
             }
 
