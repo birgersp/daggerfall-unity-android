@@ -91,6 +91,7 @@ namespace DaggerfallWorkshop.Game
             { (int)Actions.Run, (int)KeyCode.LeftShift },
             { (int)Actions.AutoRun, (int)KeyCode.Backslash },
             { (int)Actions.ToggleRun, (int)KeyCode.F12 },
+            { (int)Actions.ContextMenu, (int)KeyCode.Tab },
             { (int)Actions.Rest, (int)KeyCode.R },
             { (int)Actions.Transport, (int)KeyCode.T },
             { (int)Actions.StealMode, (int)KeyCode.F1 },
@@ -495,6 +496,7 @@ namespace DaggerfallWorkshop.Game
 
             AutoRun,
             ToggleRun,
+            ContextMenu,
 
             Unknown,
 

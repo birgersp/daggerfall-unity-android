@@ -733,6 +733,9 @@ namespace DaggerfallWorkshop.Game
                     dfDemoClassQuestions.AllowCancel = false;
                     uiManager.PushWindow(dfDemoClassQuestions);
                     break;
+                case DaggerfallUIMessages.dfuiOpenContextMenu:
+                    uiManager.PushWindow(new DaggerfallContextMenuWindow(uiManager));
+                    break;
                 case DaggerfallUIMessages.dfuiExitGame:
 #if UNITY_EDITOR
                     DaggerfallUnity.Settings.SaveSettings();

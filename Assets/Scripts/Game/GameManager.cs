@@ -518,6 +518,12 @@ namespace DaggerfallWorkshop.Game
                 DaggerfallUI.PostMessage(DaggerfallUIMessages.dfuiOpenPauseOptionsDialog);
             }
 
+            // Open Context Menu on Tab key/action or controller Right Stick Click (R3)
+            if (InputManager.Instance.ActionComplete(InputManager.Actions.ContextMenu) || Input.GetKeyUp(KeyCode.JoystickButton9))
+            {
+                DaggerfallUI.PostMessage(DaggerfallUIMessages.dfuiOpenContextMenu);
+            }
+
             // Handle in-game windows
             if (InputManager.Instance.ActionComplete(InputManager.Actions.CharacterSheet))
             {
