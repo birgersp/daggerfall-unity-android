@@ -50,6 +50,24 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
         }
 
+        public override void OnPush()
+        {
+            base.OnPush();
+            if (GameManager.HasInstance && GameManager.Instance.PlayerMouseLook != null)
+            {
+                GameManager.Instance.PlayerMouseLook.ForceHideCursor(true);
+            }
+        }
+
+        public override void OnPop()
+        {
+            base.OnPop();
+            if (GameManager.HasInstance && GameManager.Instance.PlayerMouseLook != null)
+            {
+                GameManager.Instance.PlayerMouseLook.ForceHideCursor(false);
+            }
+        }
+
         protected override void Setup()
         {
             base.Setup();

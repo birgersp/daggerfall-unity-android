@@ -283,7 +283,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
         {
             base.Update();
 
-            if (MouseOverComponent || AlwaysAcceptKeyboardInput)
+            if ((MouseOverComponent && InputManager.Instance.CursorVisible) || AlwaysAcceptKeyboardInput)
             {
                 if (DaggerfallUI.Instance.LastKeyCode == KeyCode.UpArrow)
                     SelectPrevious();
@@ -429,6 +429,10 @@ namespace DaggerfallWorkshop.Game.UserInterface
             if (listItems.Count == 0)
                 return;
             highlightedIndex = -1;
+
+            if (!InputManager.Instance.CursorVisible)
+                return;
+
             if (verticalScrollMode == VerticalScrollModes.EntryWise)
             {
                 int row = (y / ((int)(font.GlyphHeight * Scale.y) + rowSpacing));
