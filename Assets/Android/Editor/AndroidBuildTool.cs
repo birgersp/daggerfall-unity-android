@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
 
 public class AndroidBuildTool : EditorWindow
 {
@@ -119,6 +121,11 @@ public class AndroidBuildTool : EditorWindow
         PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, config.il2cpp ? ScriptingImplementation.IL2CPP : ScriptingImplementation.Mono2x);
         PlayerSettings.bundleVersion = config.version;
         PlayerSettings.Android.bundleVersionCode = int.Parse(config.bundleVersion);
+
+        // Build Addressables content first to ensure localized tables are compiled for the Android target.
+        Debug.Log("AndroidBuildTool: Cleaning and building Addressables for target Android...");
+        AddressableAssetSettings.CleanPlayerContent();
+        AddressableAssetSettings.BuildPlayerContent();
 
         // Set build options
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
